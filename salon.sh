@@ -16,16 +16,16 @@ fi
 
 SERVICE=$($PSQL "SELECT service_id, name FROM services")
 
-echo "$SERVICE" | while read SERVICE_ID BAR SERVICE_NAME
+echo "$SERVICE" | while read SERVICE_ID BAR NAME
 do
-echo "$SERVICE_ID) $SERVICE_NAME"
+echo "$SERVICE_ID) $NAME"
 done
 
-echo -e "\nEnter a service_id?"
-read SERVICE_ID_SELECTD
-NAME=$($PSQL "SELECT service_id FROM services WHERE service_id = $SERVICE_ID_SELECTD") 
+echo -e "\nPlease select a service?"
+read SERVICE_ID_SELECTED 
+SERVICE_ID_SELECTED=$($PSQL "SELECT service_id FROM services WHERE service_id = $SERVICE_ID_SELECTED ") 
 # if input is not found
-if [[ -z $NAME ]]
+if [[ -z $SERVICE_ID_SELECTED ]]
 then
 # send to main menu
 MAIN_MENU
@@ -35,8 +35,6 @@ else
   # get customer info
   echo -e "\nWhat's your phone number?"
   read CUSTOMER_PHONE
-
-
   CUSTOMER_NAME=$($PSQL "SELECT name FROM customers WHERE phone = '$CUSTOMER_PHONE'")
 
    # if customer doesn't exist
@@ -54,9 +52,9 @@ else
    read SERVICE_TIME
    
    CUSTOMER_ID=$($PSQL "SELECT customer_id FROM customers WHERE phone='$CUSTOMER_PHONE'")
-   INSERT_APPOINTMENT_TIME=$($PSQL "INSERT INTO appointments(customer_id, service_id, time) VALUES($CUSTOMER_ID, $SERVICE_ID_SELECTD, '$SERVICE_TIME')")
-   SERVICE_NAME=$($PSQL "SELECT name FROM services WHERE service_id = $SERVICE_ID_SELECTD") 
-   echo -e "I have put you down for a $SERVICE_NAME at $SERVICE_TIME, $CUSTOMER_NAME."
+   INSERT_APPOINTMENT_TIME=$($PSQL "INSERT INTO appointments(customer_id, service_id, time) VALUES($CUSTOMER_ID, $SERVICE_ID_SELECTED, '$SERVICE_TIME')")
+   NAME=$($PSQL "SELECT name FROM services WHERE service_id = $SERVICE_ID_SELECTED") 
+   echo -e "I have put you down for a $NAME at $SERVICE_TIME, $CUSTOMER_NAME."
 fi
 }
 MAIN_MENU
